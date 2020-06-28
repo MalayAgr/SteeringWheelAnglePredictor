@@ -1,58 +1,28 @@
 from tensorflow.keras import Input
-import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
-from model import build_model, train_model
-from data import flatten_csv
-
-
-def load_and_split_data(path,
-                        data_dir,
-                        column_names,
-                        test_size=.15,
-                        val_size=.15):
-    images, labels = flatten_csv(
-        path=path, data_dir=data_dir, column_names=column_names
-    )
-
-    im_train, im_test, labels_train, labels_test = train_test_split(
-        images, labels, test_size=test_size, shuffle=True
-    )
-    im_train, im_val, labels_train, labels_val = train_test_split(
-        im_train, labels_train, test_size=val_size, shuffle=True
-    )
-    return im_train, im_val, im_train, labels_train, labels_val, labels_test
-
-
-def plot_model_history(model):
-    plt.plot(model.history.history['loss'], 'r', label='train')
-    plt.plot(model.history.history['val_loss'], 'g', label='validation')
-    plt.xlabel('Epochs')
-    plt.ylabel('loss')
-    plt.legend()
+from model import build_model, train_model, plot_model_history
+from data import load_and_split_data
 
 
 def main():
     data_dir = 'data2'
     path = 'data2/driving_log.csv'
+    column_names = ['center', 'left', 'right', 'steer']
 
-    im_train, im_val, im_train, labels_train, labels_val, labels_test = load_and_split_data(
-        path=path, data_dir=data_dir,
-        column_names=['center', 'left', 'right', 'steer']
+    im_train, im_val, im_train, *labels = load_and_split_data(
+        path=path, data_dir=data_dir, column_names=column_names
     )
+    labels_train, labels_val, labels_test = labels
 
     lr = 1.0e-4
     ip = Input(shape=(66, 200, 3))
-
     model = build_model(ip=ip, activation='elu', lr=lr)
     model.summary()
 
-    train_model(model=model,
-                im_train=im_train,
-                labels_train=labels_train,
-                im_val=im_val,
-                labels_val=labels_val)
-
-    plot_model_history(model=model)
+    train_model(
+        model=model, im_train=im_train, labels_train=labels_train,
+        im_val=im_val, labels_val=labels_val
+    )
+    plot_model_history(model)
 
 
 if __name__ == '__main__':

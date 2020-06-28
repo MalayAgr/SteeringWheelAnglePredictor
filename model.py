@@ -2,6 +2,7 @@ from tensorflow.keras import Input
 from tensorflow.keras import Model
 from tensorflow.keras.layers import (Dense, Conv2D, BatchNormalization,
                                      ReLU, ELU, LeakyReLU, Dropout, Flatten)
+import matplotlib.pyplot as plt
 from tensorflow.keras.initializers import Constant
 from processing import *
 
@@ -12,14 +13,10 @@ def activation_layer(ip, activation):
             'lrelu': LeakyReLU()(ip)}[activation]
 
 
-def conv2D(ip,
-           filters,
-           kernel_size,
-           strides,
-           layer_num,
-           activation,
-           kernel_initializer='he_uniform',
-           bias_val=0.01):
+def conv2D(
+    ip, filters, kernel_size, strides, layer_num, activation,
+    kernel_initializer='he_uniform', bias_val=0.01
+):
 
     conv_name = f'conv{layer_num}_{filters}_{kernel_size[0]}_{strides[0]}'
     bn_name = f'bn{layer_num}'
@@ -35,73 +32,61 @@ def conv2D(ip,
     return activation_layer(ip=layer, activation=activation)
 
 
-def fullyconnected_layers(ip,
-                          activation,
-                          inititalizer='he_uniform',
-                          bias_val=0.01):
+def fullyconnected_layers(
+    ip, activation, inititalizer='he_uniform', bias_val=0.01
+):
 
-    layer = Dense(100,
-                  kernel_initializer=inititalizer,
-                  bias_initializer=Constant(value=bias_val),
-                  name='dense1')(ip)
-
-    layer = activation_layer(ip=layer, activation=activation)
-
-    layer = Dense(50,
-                  kernel_initializer=inititalizer,
-                  bias_initializer=Constant(value=bias_val),
-                  name='dense2')(layer)
+    layer = Dense(
+        100, kernel_initializer=inititalizer,
+        bias_initializer=Constant(value=bias_val), name='dense1'
+    )(ip)
 
     layer = activation_layer(ip=layer, activation=activation)
 
-    return Dense(10,
-                 kernel_initializer=inititalizer,
-                 bias_initializer=Constant(value=bias_val),
-                 name='dense3')(layer)
+    layer = Dense(
+        50, kernel_initializer=inititalizer,
+        bias_initializer=Constant(value=bias_val), name='dense2'
+    )(layer)
+
+    layer = activation_layer(ip=layer, activation=activation)
+
+    return Dense(
+        10, kernel_initializer=inititalizer,
+        bias_initializer=Constant(value=bias_val), name='dense3'
+    )(layer)
 
     return activation_layer(ip=layer, activation=activation)
 
 
-def build_model(ip=Input(shape=(128, 128, 3)),
-                activation='relu',
-                dropout=0.5,
-                compile_model=True,
-                lr=1e-3):
+def build_model(
+    ip=Input(shape=(128, 128, 3)), activation='relu', dropout=0.5,
+    compile_model=True, lr=1e-3
+):
 
-    layer = conv2D(ip,
-                   filters=24,
-                   kernel_size=(5, 5),
-                   strides=(2, 2),
-                   layer_num=1,
-                   activation=activation)
+    layer = conv2D(
+        ip, filters=24, kernel_size=(5, 5), strides=(2, 2), layer_num=1,
+        activation=activation
+    )
 
-    layer = conv2D(layer,
-                   filters=36,
-                   kernel_size=(5, 5),
-                   strides=(2, 2),
-                   layer_num=2,
-                   activation=activation)
+    layer = conv2D(
+        layer, filters=36, kernel_size=(5, 5), strides=(2, 2), layer_num=2,
+        activation=activation
+    )
 
-    layer = conv2D(layer,
-                   filters=48,
-                   kernel_size=(5, 5),
-                   strides=(2, 2),
-                   layer_num=3,
-                   activation=activation)
+    layer = conv2D(
+        layer, filters=48, kernel_size=(5, 5), strides=(2, 2), layer_num=3,
+        activation=activation
+    )
 
-    layer = conv2D(layer,
-                   filters=64,
-                   kernel_size=(3, 3),
-                   strides=(1, 1),
-                   layer_num=4,
-                   activation=activation)
+    layer = conv2D(
+        layer, filters=64, kernel_size=(3, 3), strides=(1, 1), layer_num=4,
+        activation=activation
+    )
 
-    layer = conv2D(layer,
-                   filters=64,
-                   kernel_size=(3, 3),
-                   strides=(1, 1),
-                   layer_num=5,
-                   activation=activation)
+    layer = conv2D(
+        layer, filters=64, kernel_size=(3, 3), strides=(1, 1), layer_num=5,
+        activation=activation
+    )
 
     layer = Dropout(dropout)(layer)
 
@@ -127,17 +112,22 @@ def get_batch(image_paths, labels, batch_size, is_training=False):
         yield preprocess(images), final_labels
 
 
-def train_model(model,
-                im_train,
-                labels_train,
-                im_val,
-                labels_val,
-                batch_size=64,
-                epochs=50):
+def train_model(
+    model, im_train, labels_train, im_val, labels_val, batch_size=64, epochs=50
+):
+    model.fit_generator(
+        get_batch(im_train, labels_train, batch_size, is_training=True),
+        steps_per_epoch=len(im_train) // batch_size,
+        epochs=epochs,
+        validation_data=get_batch(im_val, labels_val, batch_size),
+        validation_steps=len(im_val) // batch_size,
+        verbose=1
+    )
 
-    model.fit_generator(get_batch(im_train, labels_train, batch_size, is_training=True),
-                        steps_per_epoch=len(im_train) // batch_size,
-                        epochs=epochs,
-                        validation_data=get_batch(im_val, labels_val, batch_size),
-                        validation_steps=len(im_val) // batch_size,
-                        verbose=1)
+
+def plot_model_history(model):
+    plt.plot(model.history.history['loss'], 'r', label='train')
+    plt.plot(model.history.history['val_loss'], 'g', label='validation')
+    plt.xlabel('Epochs')
+    plt.ylabel('loss')
+    plt.legend()

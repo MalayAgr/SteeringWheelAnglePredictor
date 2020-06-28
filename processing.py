@@ -2,14 +2,16 @@ import numpy as np
 import cv2
 
 
-vectorized_imread = np.vectorize(cv2.imread,
-                                 signature="()->(x,y,z)")
-vectorized_imresize = np.vectorize(cv2.resize,
-                                   excluded=['dsize', 'interpolation'],
-                                   signature='(x,y,z)->(a,b,c)')
-vectorized_cvtColor = np.vectorize(cv2.cvtColor,
-                                   excluded='code',
-                                   signature="(x,y,z),()->(a,b,c)")
+vectorized_imread = np.vectorize(
+    cv2.imread, signature="()->(x,y,z)"
+)
+vectorized_imresize = np.vectorize(
+    cv2.resize, excluded=['dsize', 'interpolation'],
+    signature='(x,y,z)->(a,b,c)'
+)
+vectorized_cvtColor = np.vectorize(
+    cv2.cvtColor, excluded='code', signature="(x,y,z),()->(a,b,c)"
+)
 
 
 def channelwise_standardization(images, epsilon=1e-7):
