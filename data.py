@@ -7,7 +7,8 @@ def flatten_csv(path,
                 data_dir,
                 column_names,
                 header=None,
-                usecols=[0, 1, 2, 3]):
+                usecols=[0, 1, 2, 3],
+                shift=0.2):
 
     df = pd.read_csv(path,
                      header=header,
@@ -26,8 +27,8 @@ def flatten_csv(path,
 
     df['steer'] = labels
 
-    df.loc[df['image'].str.contains('right'), 'steer'] = df['steer'] - 0.2
-    df.loc[df['image'].str.contains('left'), 'steer'] = df['steer'] + 0.2
+    df.loc[df['image'].str.contains('right'), 'steer'] = df['steer'] - shift
+    df.loc[df['image'].str.contains('left'), 'steer'] = df['steer'] + shift
 
     df['image'] = os.path.abspath(data_dir) + df['image']
 
