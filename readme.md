@@ -169,7 +169,7 @@ A vectorized implementation of OpenCV's `imread()` function developed using `num
 |-----------------------------------------------------  |---------------------------------------------------------------------------------------------------------------------------    |
 | `images`                                              | `numpy.array`: A 1D array of strings representing paths to images files. This necessarily needs to be the first argument.     |
 | **Returns**                                           |                                                                                                                               |
-| `images`                                              | `numpy.array`: A 4D array of images as (N X height X width X channels)                                                        |
+| `images`                                              | `numpy.array`: A 4D array of images as (N X height X width X channels).                                                        |
 
 > **NOTE:** This doesn't have, most of the times, any performance gains. The internal implementation is essentially a loop. It exists purely for conciseness.
 
@@ -179,9 +179,9 @@ A vectorized implementation of OpenCV's `resize()` function developed using `num
 
 | **Arguments** (excluding those from `cv2.resize()`)   |                                                                                           |
 |-----------------------------------------------------  |---------------------------------------------------------------------------------------    |
-| `images`                                              | `numpy.array`: A 4D array of images. This necessarily needs to be the first argument.     |
+| `images`                                              | `numpy.array`: A 4D array of images as (N X height x width X channels). This necessarily needs to be the first argument.     |
 | **Returns**                                           |                                                                                           |
-| `images`                                              | `numpy.array`: A 4D array of the resized images.                                          |
+| `images`                                              | `numpy.array`: The resized images as a 4D array.                                          |
 
 > **NOTE:** This doesn't have, most of the times, any performance gains. The internal implementation is essentially a loop. It exists purely for conciseness.
 
@@ -192,9 +192,9 @@ A vectorized implementation of OpenCV's `cvtColor()` function developed using `n
 
 | **Arguments** (excluding those from `cv2.cvtColor()`)   |                                                                                           |
 |-----------------------------------------------------  |---------------------------------------------------------------------------------------    |
-| `images`                                              | `numpy.array`: A 4D array of images. This necessarily needs to be the first argument.     |
+| `images`                                              | `numpy.array`: A 4D array of images as (N X height x width X channels). This necessarily needs to be the first argument.     |
 | **Returns**                                           |                                                                                           |
-| `images`                                              | `numpy.array`: A 4D array of the converted images.                                        |
+| `images`                                              | `numpy.array`: The converted images as a 4D array.                                    |
 
 > **NOTE:** This doesn't have, most of the times, any performance gains. The internal implementation is essentially a loop. It exists purely for conciseness.
 
@@ -204,10 +204,10 @@ Standardizes the images so that they have 0 mean and unit standard deviation per
 
 | **Arguments**     |                                                                                                                           |
 |---------------    |------------------------------------------------------------------------------------------------------------------------   |
-| `images`          | `numpy.array`: A 4D array of images as (N X height x width X channels)                                                    |
-| `epsilon`         | `float`: A small value that will be added to the standard deviation to prevent `ZeroDivisionError`. Defaults to `1e-7`    |
+| `images`          | `numpy.array`: A 4D array of images as (N X height x width X channels).                                                    |
+| `epsilon`         | `float`: A small value that will be added to the standard deviation to prevent `ZeroDivisionError`. Defaults to `1e-7`.    |
 | **Returns**   |                                                   |
-| `images`      | `numpy.array`: The standardized images as a 4D array   |
+| `images`      | `numpy.array`: The standardized images as a 4D array.   |
 
 #### [processing.preprocess()](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/bf46840556ba66fb7d6948b098a4119011fa8dde/processing.py#L23)
 
@@ -215,12 +215,12 @@ Combines resizing, colorspace conversion and standardization into one single fun
 
 | **Arguments**     |                                                                                       |
 |---------------    |-------------------------------------------------------------------------------------  |
-| `images`          | `numpy.array`: A 4D array of images as (N X height x width X channels)                |
-| `size`            | `tuple`: The target size of the images as (width X height). Defaults to `(200, 66)`   |
-| `epsilon`         | `float`: A small value that will be added to the standard deviation to prevent `ZeroDivisionError`. Defaults to `1e-7`    |
-| `colorspace`      | `cv2.ColorConversionCode`: A code representing the target colorspace. Defaults to `cv2.COLOR_BGR2YUV`     |
+| `images`          | `numpy.array`: A 4D array of images as (N X height x width X channels).              |
+| `size`            | `tuple`: The target size of the images as (width X height). Defaults to `(200, 66)`.   |
+| `epsilon`         | `float`: A small value that will be added to the standard deviation to prevent `ZeroDivisionError`. Defaults to `1e-7`.    |
+| `colorspace`      | `cv2.ColorConversionCode`: A code representing the target colorspace. Defaults to `cv2.COLOR_BGR2YUV`.     |
 | **Returns**   |                                                   |
-| `images`      | `numpy.array`: The preprocessed images as a 4D array   |
+| `images`      | `numpy.array`: The preprocessed images as a 4D array.   |
 
 
 ----
