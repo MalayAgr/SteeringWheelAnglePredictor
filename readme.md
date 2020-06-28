@@ -350,10 +350,11 @@ Helper function which works as an infinite generator, yielding random batches of
 
 Helper function which plots the train and validation loss curve of the model against the number of epochs.
 
-| `Arguments`   |                                                                                                                                               |       |
-|-------------  |---------------------------------------------------------------------------------------------------------------------------------------------- |---    |
-| `model`       | `keras.Model`: A trained Keras model. **Note**: This function can't be used on a model loaded from memory since such a model has no history.  |       |
+> **Note**: The function can't be used on a model loaded from memory since such a model has no history.
 
+| **Arguments**   |                                           |
+|-------------  |---------------------------------------    |
+| `model`       | `keras.Model`: A trained Keras model.     |
 
 
 #### [model.train_model()](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/bf46840556ba66fb7d6948b098a4119011fa8dde/model.py#L123)
