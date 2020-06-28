@@ -16,11 +16,14 @@ This document highlights the steps we took to achieve that goal.
     - Loading Data \(Module: data\)
         - data.flatten_csv\(path, data_dir, column_names, header=None, usecols=&#91;0, 1, 2, 3&#93;\)
             - Example
-    - Processing Data \(Module: processing\)
-        - processing.vectorized_imresize
-        - processing.resize_images\(images, size=(200, 66\))
-        - processing.vectorized_cvtColor
-        - processing.convert_images_colorspace\(images, colorspace=cv2.COLOR_BGR2YUV\)
+    - Preprocessing Data \(Module: processing\)
+        - processing.vectorized_imresize\(images, dsize, interpolation=cv2.INTER_LINEAR\)
+        - processing.vectorized_cvtColor\(images, code\)
+        - processing.channelwise_standardization\(images, epsilon=1e-7\)
+        - processing.preprocess\(images, size=(200, 66\), epsilon=1e-7, colorspace=cv2.COLOR_BGR2YUV)
+    - Augmenting Data \(Module: processing\)
+        - processing.augment_images\(images, labels, aug_threshold=0.6, flip_threshold=0.5\)
+        - processing.flip_images\(images, labels, mask=None, threshold=0.5\)
 - References
 
 <!-- /MarkdownTOC -->
@@ -106,10 +109,7 @@ This section documents the complete API available to the user for processing dat
 | `header`          |                                                  `bool`: Indicates whether the CSV file contains a header or not. Defaults to `None`.                                                     |
 | `usecols`         | `list`: The index of columns to be used in the CSV. Last item should always be for the column containing the labels. Defaults to `[0, 1, 2, 3]`, using first four columns of the file.    |
 | `shift`           | `float`: The amount by which the right and left images will be shifted. Defaults to `0.2`.                                                                                                |
-
-
 | **Returns**   |                                                                           |
-|-------------  |-----------------------------------------------------------------------    |
 | `images`      | `numpy.array`: A 1D numpy array with the flattened image paths            |
 | `labels`      | `numpy.array`: A 1D numpy array with the flattened and shifted labels     |
 
@@ -135,45 +135,86 @@ Calling the function on this file will return:
 
 ----
 
-### [Processing Data (Module: processing)](processing.py)
+### [Preprocessing Data (Module: processing)](processing.py)
 
-#### [processing.vectorized_imresize](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/c30377f8a199db07d56d880c18c7acfb7524675e/processing.py#L7)
+#### [processing.vectorized_imresize(images, dsize, interpolation=cv2.INTER_LINEAR)](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/c30377f8a199db07d56d880c18c7acfb7524675e/processing.py#L7)
 
-A vectorized implementation of OpenCV's `resize()` function developed using `numpy.vectorize()`
+A vectorized implementation of OpenCV's `resize()` function developed using `numpy.vectorize()`, used to resize a bunch of images in a single call.
+
+Arguments are same as the normal `resize()` function, except that this function takes multiple images instead of a single image.
+
+It returns the resized images as a 4D array.
 
 > **NOTE:** This doesn't have, most of the times, any performance gains. The internal implementation is essentially a loop. It exists purely for conciseness.
 
-#### [processing.resize_images(<em>images, size=(200, 66)</em>)](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/c30377f8a199db07d56d880c18c7acfb7524675e/processing.py#L15)
+
+#### [processing.vectorized_cvtColor(images, code)](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/c30377f8a199db07d56d880c18c7acfb7524675e/processing.py#L10)
+
+A vectorized implementation of OpenCV's `cvtColor()` function developed using `numpy.vectorize()`, used to change the colorspace of a bunch of images in a single call.
+
+Arguments are same as the normal `cvtColor()` function, except that this function takes multiple images instead of a single image.
+
+It returns the converted images as a 4D array.
+
+> **NOTE:** This doesn't have, most of the times, any performance gains. The internal implementation is essentially a loop. It exists purely for conciseness.
+
+#### [processing.channelwise_standardization(<em>images, epsilon=1e-7</em>)](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/7e6fd9817bb41c04198a70818fd97761d532ded6/processing.py#L25)
+
+| **Arguments**     |                                                                                                                           |
+|---------------    |------------------------------------------------------------------------------------------------------------------------   |
+| `images`          | `numpy.array`: A 4D array of images as (N X height x width X channels)                                                    |
+| `epsilon`         | `float`: A small value that will be added to the standard deviation to prevent `ZeroDivisionError`. Defaults to `1e-7`    |
+| **Returns**   |                                                   |
+| `images`      | `numpy.array`: The standardized images as a 4D array   |
+
+Standardizes the images so that they have 0 mean and unit standard deviation per channel (RGB, YUV, etc.)
+
+#### [processing.preprocess(<em>images, size=(200, 66), epsilon=1e-7, colorspace=cv2.COLOR_BGR2YUV</em>)](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/0a39d7c5d90c23d28e69c0c3eba73bf9a6b59f15/processing.py#L21)
 
 | **Arguments**     |                                                                                       |
 |---------------    |-------------------------------------------------------------------------------------  |
 | `images`          | `numpy.array`: A 4D array of images as (N X height x width X channels)                |
 | `size`            | `tuple`: The target size of the images as (width X height). Defaults to `(200, 66)`   |
-
-| **Returns**   |                                                   |
-|-------------  |-------------------------------------------------  |
-| `images`      | `numpy.array`: The resized images as a 4D array   |
-
-Uses `processing.vectorized_imresize` to resize a bunch of images in a single call.
-
-#### [processing.vectorized_cvtColor](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/c30377f8a199db07d56d880c18c7acfb7524675e/processing.py#L10)
-
-A vectorized implementation of OpenCV's `cvtColor()` function developed using `numpy.vectorize()`
-
-> **NOTE:** This doesn't have, most of the times, any performance gains. The internal implementation is essentially a loop. It exists purely for conciseness.
-> 
-#### [processing.convert_images_colorspace(<em>images, colorspace=cv2.COLOR_BGR2YUV</em>)](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/c30377f8a199db07d56d880c18c7acfb7524675e/processing.py#L21)
-
-| **Arguments**     |                                                                                                           |
-|---------------    |-------------------------------------------------------------------------------------------------------    |
-| `images`          | `numpy.array`: A 4D array of images as (N X height x width X channels)                                    |
+| `epsilon`         | `float`: A small value that will be added to the standard deviation to prevent `ZeroDivisionError`. Defaults to `1e-7`    |
 | `colorspace`      | `cv2.ColorConversionCode`: A code representing the target colorspace. Defaults to `cv2.COLOR_BGR2YUV`     |
-
 | **Returns**   |                                                   |
-|-------------  |-------------------------------------------------  |
-| `images`      | `numpy.array`: The converted images as a 4D array   |
+| `images`      | `numpy.array`: The preprocessed images as a 4D array   |
 
-Uses `processing.vectorized_cvtColor` to change the color space of a bunch of images in a single call.
+Combines resizing, colorspace conversion and standardization into one single function, becoming the preprocessor in the pipeline. It uses `processing.vectorized_imresize()`, `processing.vectorized_cvtColor()` and `processing.channelwise_standardization()` to perform these tasks. Additionally, the function changes the data type used for the images from `float64` (NumPy's default) to `float32` to reduce amount of memory occupied by the images.
+
+----
+
+### [Augmenting Data (Module: processing)](processing.py)
+
+#### [processing.augment_images(<em>images, labels, aug_threshold=0.6, flip_threshold=0.5</em>)](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/0a39d7c5d90c23d28e69c0c3eba73bf9a6b59f15/processing.py#L40)
+
+| **Arguments**     |                                                                                           |
+|------------------ |----------------------------------------------------------------------------------------   |
+| `images`          | `numpy.array`: A 4D array of images as (N X height x width X channels).                   |
+| `labels`          | `numpy.array`: A 1D array containing all the labels for the images.                       |
+| `aug_threshold`   | `float`: The minimum probability for an image to not be augmented. Defaults to `0.6`.     |
+| `flip_threshold`  | `float`: The minimum probability for an image to not be flipped. Defaults to `0.5`.       |
+| **Returns**   |                                                                   |
+| `images`      | `numpy.array`: Augmented and unaugmented images as a 4D array.    |
+| `labels`      | `numpy.array`: Augmented and unaugmented labels as a 1D array.    |
+
+Augments images according to the given threshold. It currently supports only random left/right flipping according to the given flip threshold.
+
+#### [processing.flip_images(<em>images, labels, mask=None, threshold=0.5</em>)](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/0a39d7c5d90c23d28e69c0c3eba73bf9a6b59f15/processing.py#L32)
+
+| **Arguments**     |                                                                                                                                                       |
+|---------------    |---------------------------------------------------------------------------------------------------------------------------------------------------    |
+| `images`          | `numpy.array`: A 4D array of images as (N X height x width X channels).                                                                               |
+| `labels`          | `numpy.array`: A 1D array containing all the labels for the images.                                                                                   |
+| `mask`            | `numpy.array`: A Boolean mask which can be used to apply another condition to determine whether flipping will be done or not. Defaults to `None`.     |
+| `threshold`       | `float`: The minimum probability for an image to not be flipped. Defaults to `0.5`.                                                                   |
+| **Returns**   |                                                                   |
+| `images`      | `numpy.array`: Flipped and normal images as a 4D array.    |
+| `labels`      | `numpy.array`: Flipped and normal labels as a 1D array.    |
+
+A helper function which flips the images left/right that are outside the threshold *and* `True` in `mask` if it is specified, flipping the corresponding labels as well (simple negation).
+
+`processing.augment_images()` passes `mask` based on `aug_threshold` to ensure that flipped images are among the images that are to be augmented.
 
 
 ## References
