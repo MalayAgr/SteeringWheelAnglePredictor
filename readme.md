@@ -4,6 +4,7 @@
 
 This document highlights the steps we took to achieve that goal.
 
+----
 
 ### Table of Contents
 
@@ -17,9 +18,9 @@ This document highlights the steps we took to achieve that goal.
 
 <!-- /MarkdownTOC -->
 
-### General Approach
-
 ----
+
+### General Approach
 
 #### The Code
 
