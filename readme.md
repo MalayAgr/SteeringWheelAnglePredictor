@@ -53,7 +53,7 @@ The architecture of the CNN model is as follows:
 
 This leads to ~2,50,000 trainable parameters in the model.
 
-While we have followed this architecture closely, we have experimented with various activation functions and have also designed the code such that it is extremely convenient to switch the activation function for the entire model. Specifically, in addition to using the standard **ReLU** activation with He Normal initialization and a small constant bias, we have experimented with **ELU** and **LeakyReLU** as our activation functions.
+While we have followed this architecture closely, we have experimented with various activation functions and have also designed the code such that it is extremely convenient to switch the activation function for the entire model. Specifically, in addition to using the standard **ReLU** activation with He Normal initialization and a small constant bias, we have experimented with **ELU**[[2]](#ref-2) and **LeakyReLU**[[3]](#ref-3) as our activation functions.
 
 ELU helps with dealing with dying neurons and exploding gradients better than ReLU and in the end, became the activation function of choice for our model. LeakyReLU was found to perform worse than both ELU and ReLU, and now exists only as an API feature.
 
@@ -84,5 +84,12 @@ Our model was trained to be able to drive on the two default tracks available in
 
 ### References
 
-<a  id="ref-1">[1]</a>
-Mariusz Bojarski, Davide Del Testa, Daniel Dworakowski, Bernhard Firner, Beat Flepp, Prasoon Goyal, Lawrence D. Jackel, Mathew Monfort, Urs Muller, Jiakai Zhang, Xin Zhang, Jake Zhao, and Karol Zieba. (2016). [End to End Learning for Self-Driving Cars](https://arxiv.org/abs/1604.07316).
+* <a  id="ref-1">[1]</a> Mariusz Bojarski, Davide Del Testa, Daniel Dworakowski, Bernhard Firner, Beat Flepp, Prasoon Goyal, Lawrence D. Jackel, Mathew Monfort, Urs Muller, Jiakai Zhang, Xin Zhang, Jake Zhao, and Karol Zieba. (2016). [End to End Learning for Self-Driving Cars](https://arxiv.org/abs/1604.07316).
+* <a  id="ref-2">[2]</a> Djork-Arné Clevert, Thomas Unterthiner, & Sepp Hochreiter. (2015). [Fast and Accurate Deep Network Learning by Exponential Linear Units (ELUs)](https://arxiv.org/abs/1511.07289).
+* <a  id="ref-3">[3]</a> Andrew L. Maas 2013. [Rectifier Nonlinearities Improve Neural Network Acoustic Models](https://ai.stanford.edu/~amaas/papers/relu_hybrid_icml2013_final.pdf).
+
+
+
+
+
+
