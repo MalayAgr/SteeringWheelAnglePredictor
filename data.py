@@ -34,10 +34,12 @@ def flatten_csv(
 
 
 def load_and_split_data(
-    path, data_dir, column_names, test_size=.15, val_size=.15
+    path, data_dir, column_names, header=None, usecols=[0, 1, 2, 3],
+    shift=0.2, test_size=.15, val_size=.15
 ):
     images, labels = flatten_csv(
-        path=path, data_dir=data_dir, column_names=column_names
+        path=path, data_dir=data_dir, column_names=column_names,
+        header=header, usecols=usecols, shift=shift
     )
 
     im_train, im_test, labels_train, labels_test = train_test_split(
