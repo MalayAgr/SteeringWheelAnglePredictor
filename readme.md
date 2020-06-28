@@ -51,6 +51,13 @@ The architecture of the CNN model is as follows:
 * Two fully-connected layers with 100 and 50 units respectively
 * A final fully-connected layer with 1 unit for the output
 
+<div align="center" style="padding: 10px;">
+    <img src="img/model_diagram.png" width="500" height="500" alt="Model">
+    <div>
+        <em>Source: <a href="#ref-1">[1]</a></em>
+    </div>
+</div>
+
 This leads to ~2,50,000 trainable parameters in the model.
 
 While we have followed this architecture closely, we have experimented with various activation functions and have also designed the code such that it is extremely convenient to switch the activation function for the entire model. Specifically, in addition to using the standard **ReLU** activation with He Normal initialization and a small constant bias, we have experimented with **ELU** [[2]](#ref-2) and **LeakyReLU** [[3]](#ref-3) as our activation functions.
