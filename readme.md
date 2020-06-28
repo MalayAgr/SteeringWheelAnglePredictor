@@ -14,7 +14,7 @@ This document highlights the steps we took to achieve that goal.
     - The Data
 - The "API"
     - Loading Data \(Module: data\)
-        - data.flatten_csv\(path, data_dir, column_names, header=None, usecols=&#91;0, 1, 2, 3&#93;\)
+        - data.flatten_csv\(path, data_dir, column_names, header=None, usecols=&#91;0, 1, 2, 3&#93;, shift=0.2\)
             - Example
     - Preprocessing Data \(Module: processing\)
         - processing.vectorized_imresize\(images, dsize, interpolation=cv2.INTER_LINEAR\)
@@ -99,7 +99,7 @@ This section documents the complete API available to the user for processing dat
 > 
 ### [Loading Data (Module: data)](data.py)
 
-#### [data.flatten_csv(<em>path, data_dir, column_names, header=None, usecols=&#91;0, 1, 2, 3&#93;</em>)](/blob/34977001664d516b1e2ae007ddc3c0bebf2da39a/data.py#L6)
+#### [data.flatten_csv(<em>path, data_dir, column_names, header=None, usecols=&#91;0, 1, 2, 3&#93;, shift=0.2</em>)](/blob/34977001664d516b1e2ae007ddc3c0bebf2da39a/data.py#L6)
 
 | **Arguments**         |                                                                                                                                                                                           |
 |----------------   |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   |
