@@ -1,3 +1,4 @@
+from tensorflow.keras import Input
 from tensorflow.keras import Model
 from tensorflow.keras.layers import (Dense, Conv2D, BatchNormalization,
                                      ReLU, ELU, LeakyReLU, Dropout, Flatten)
@@ -61,9 +62,11 @@ def fullyconnected_layers(ip,
     return activation_layer(ip=layer, activation=activation)
 
 
-def build_model(ip,
-                activation,
-                dropout=0.5):
+def build_model(ip=Input(shape=(128, 128, 3)),
+                activation='relu',
+                dropout=0.5,
+                compile_model=True,
+                lr=1e-3):
 
     layer = conv2D(ip,
                    filters=24,
@@ -107,7 +110,10 @@ def build_model(ip,
     layer = fullyconnected_layers(layer, activation=activation)
     op_layer = Dense(1, name="op_layer")(layer)
 
-    return Model(ip, op_layer)
+    model = Model(ip, op_layer)
+    if compile_model:
+        model.compile(loss='mse', optimizer=Adam(lr=lr))
+    return model
 
 
 def get_batch(image_paths, labels, batch_size, is_training=False):
