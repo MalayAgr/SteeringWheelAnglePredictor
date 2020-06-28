@@ -17,6 +17,7 @@ This document highlights the steps we took to achieve that goal.
         - data.flatten_csv\(path, data_dir, column_names, header=None, usecols=&#91;0, 1, 2, 3&#93;, shift=0.2\)
             - Example
     - Preprocessing Data \(Module: processing\)
+        - processing.vectorized_imread\(image_paths\)
         - processing.vectorized_imresize\(images, dsize, interpolation=cv2.INTER_LINEAR\)
         - processing.vectorized_cvtColor\(images, code\)
         - processing.channelwise_standardization\(images, epsilon=1e-7\)
@@ -24,6 +25,9 @@ This document highlights the steps we took to achieve that goal.
     - Augmenting Data \(Module: processing\)
         - processing.augment_images\(images, labels, aug_threshold=0.6, flip_threshold=0.5\)
         - processing.flip_images\(images, labels, mask=None, threshold=0.5\)
+    - Building the Model \(Module: model\)
+        - model.activation_layer\(ip, activation\)
+        - model.conv2D\(ip, filters, kernel_size, strides, layer_num, activation, kernel_initializer='he_uniform', bias_val=0.01\)
 - References
 
 <!-- /MarkdownTOC -->
@@ -101,6 +105,12 @@ This section documents the complete API available to the user for processing dat
 
 #### [data.flatten_csv(<em>path, data_dir, column_names, header=None, usecols=&#91;0, 1, 2, 3&#93;, shift=0.2</em>)](/blob/34977001664d516b1e2ae007ddc3c0bebf2da39a/data.py#L6)
 
+"Flattens" the CSV files so that the the three columns containing the three angles become rows in themselves and the steering angle gets repeated for them. It also shifts the steering angle for right (subtracting `shift`) and left images (adding `shift`) as all angles are with respect to center image.
+
+As stated above, the simulator outputs a CSV file where each row has paths to images from three different angles and the steering angle. A standard CNN can take as input only one image at a time and therefore, for each row, we are forced to select one of the three angles. While a good model can be obtained by randomly selecting any one of the angles, a better model can be obtained by feeding it all the angles.
+
+Effectively, if your CSV file has `m` rows, the function will give you 1D arrays of size `3m`.
+
 | **Arguments**         |                                                                                                                                                                                           |
 |----------------   |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   |
 | `path`            |                                                                                `str`: Path to CSV file.                                                                                   |
@@ -112,12 +122,6 @@ This section documents the complete API available to the user for processing dat
 | **Returns**   |                                                                           |
 | `images`      | `numpy.array`: A 1D numpy array with the flattened image paths            |
 | `labels`      | `numpy.array`: A 1D numpy array with the flattened and shifted labels     |
-
-"Flattens" the CSV files so that the the three columns containing the three angles become rows in themselves and the steering angle gets repeated for them. It also shifts the steering angle for right (subtracting `shift`) and left images (adding `shift`) as all angles are with respect to center image.
-
-As stated above, the simulator outputs a CSV file where each row has paths to images from three different angles and the steering angle. A standard CNN can take as input only one image at a time and therefore, for each row, we are forced to select one of the three angles. While a good model can be obtained by randomly selecting any one of the angles, a better model can be obtained by feeding it all the angles.
-
-Effectively, if your CSV file has `m` rows, the function will give you 1D arrays of size `3m`.
 
 ##### Example
 
@@ -133,9 +137,19 @@ Calling the function on this file will return:
  labels = [0.5, 0.7, 0.3]
 ```
 
+
 ----
 
 ### [Preprocessing Data (Module: processing)](processing.py)
+
+#### [processing.vectorized_imread(image_paths)](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/eaf8f4b97bc57dddf6ba77ef0a9a919a7b6e34c0/processing.py#L5)
+
+A vectorized implementation of OpenCV's `imread()` function developed using `numpy.vectorize()`, used to obtain a 4D array of images from a list of image paths in a single call.
+
+Arguments are same as the normal `imread()` function, except that this function takes multiple image paths instead of a single image path.
+
+It returns the opened images as a 4D array.
+
 
 #### [processing.vectorized_imresize(images, dsize, interpolation=cv2.INTER_LINEAR)](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/c30377f8a199db07d56d880c18c7acfb7524675e/processing.py#L7)
 
@@ -160,6 +174,8 @@ It returns the converted images as a 4D array.
 
 #### [processing.channelwise_standardization(<em>images, epsilon=1e-7</em>)](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/7e6fd9817bb41c04198a70818fd97761d532ded6/processing.py#L25)
 
+Standardizes the images so that they have 0 mean and unit standard deviation per channel (RGB, YUV, etc.)
+
 | **Arguments**     |                                                                                                                           |
 |---------------    |------------------------------------------------------------------------------------------------------------------------   |
 | `images`          | `numpy.array`: A 4D array of images as (N X height x width X channels)                                                    |
@@ -167,9 +183,9 @@ It returns the converted images as a 4D array.
 | **Returns**   |                                                   |
 | `images`      | `numpy.array`: The standardized images as a 4D array   |
 
-Standardizes the images so that they have 0 mean and unit standard deviation per channel (RGB, YUV, etc.)
-
 #### [processing.preprocess(<em>images, size=(200, 66), epsilon=1e-7, colorspace=cv2.COLOR_BGR2YUV</em>)](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/0a39d7c5d90c23d28e69c0c3eba73bf9a6b59f15/processing.py#L21)
+
+Combines resizing, colorspace conversion and standardization into one single function, becoming the preprocessor in the pipeline. It uses `processing.vectorized_imresize()`, `processing.vectorized_cvtColor()` and `processing.channelwise_standardization()` to perform these tasks. Additionally, the function changes the data type used for the images from `float64` (NumPy's default) to `float32` to reduce amount of memory occupied by the images.
 
 | **Arguments**     |                                                                                       |
 |---------------    |-------------------------------------------------------------------------------------  |
@@ -180,13 +196,14 @@ Standardizes the images so that they have 0 mean and unit standard deviation per
 | **Returns**   |                                                   |
 | `images`      | `numpy.array`: The preprocessed images as a 4D array   |
 
-Combines resizing, colorspace conversion and standardization into one single function, becoming the preprocessor in the pipeline. It uses `processing.vectorized_imresize()`, `processing.vectorized_cvtColor()` and `processing.channelwise_standardization()` to perform these tasks. Additionally, the function changes the data type used for the images from `float64` (NumPy's default) to `float32` to reduce amount of memory occupied by the images.
 
 ----
 
 ### [Augmenting Data (Module: processing)](processing.py)
 
 #### [processing.augment_images(<em>images, labels, aug_threshold=0.6, flip_threshold=0.5</em>)](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/0a39d7c5d90c23d28e69c0c3eba73bf9a6b59f15/processing.py#L40)
+
+Augments images according to the given threshold. It currently supports only random left/right flipping according to the given flip threshold.
 
 | **Arguments**     |                                                                                           |
 |------------------ |----------------------------------------------------------------------------------------   |
@@ -198,9 +215,11 @@ Combines resizing, colorspace conversion and standardization into one single fun
 | `images`      | `numpy.array`: Augmented and unaugmented images as a 4D array.    |
 | `labels`      | `numpy.array`: Augmented and unaugmented labels as a 1D array.    |
 
-Augments images according to the given threshold. It currently supports only random left/right flipping according to the given flip threshold.
-
 #### [processing.flip_images(<em>images, labels, mask=None, threshold=0.5</em>)](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/0a39d7c5d90c23d28e69c0c3eba73bf9a6b59f15/processing.py#L32)
+
+A helper function which flips the images left/right that are outside the threshold *and* `True` in `mask` if it is specified, flipping the corresponding labels as well (simple negation).
+
+`processing.augment_images()` calls this function and passes `mask` based on `aug_threshold` to ensure that flipped images are among the images that are to be augmented.
 
 | **Arguments**     |                                                                                                                                                       |
 |---------------    |---------------------------------------------------------------------------------------------------------------------------------------------------    |
@@ -212,9 +231,41 @@ Augments images according to the given threshold. It currently supports only ran
 | `images`      | `numpy.array`: Flipped and normal images as a 4D array.    |
 | `labels`      | `numpy.array`: Flipped and normal labels as a 1D array.    |
 
-A helper function which flips the images left/right that are outside the threshold *and* `True` in `mask` if it is specified, flipping the corresponding labels as well (simple negation).
 
-`processing.augment_images()` passes `mask` based on `aug_threshold` to ensure that flipped images are among the images that are to be augmented.
+----
+
+### [Building the Model (Module: model)](model.py)
+
+#### [model.activation_layer(<em>ip, activation</em>)](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/eaf8f4b97bc57dddf6ba77ef0a9a919a7b6e34c0/model.py#L8)
+
+Initializes a `ReLU`, `ELU` or `LeakyReLU` activation layer with the given input layer based on `activation`. This function can be used in place of the `activation` keyword argument in all Keras layers to mix-match activations for different layers and easily use `ELU`, `LeakyReLU`, which otherwise need to be imported separately.
+
+| **Arguments**     |                                                                                                                                       |
+|---------------    |-------------------------------------------------------------------------------------------------------------------------------------  |
+| `ip`              | `keras.layers.Layer`: Any Keras layer such as `Input`, `Conv2D`, `Dense`, etc., which will be used as the input for the activation.   |
+| `activation`      | `str`: The activation layer to be used. Can be `relu`, `elu` or `lrelu`.                                                              |
+| **Returns**       |                                                                                                                                       |
+| `activation`      | `keras.layers.Layer`: Either of `ReLU`, `ELU` or `LeakyReLU` activation layers initialized with the given input.                                  |
+| **Raises**        |                                                                                                                                       |
+| `KeyError`        | When `activation` is not one of the specified values.                                                                                 |
+
+#### [model.conv2D(<em>ip, filters, kernel_size, strides, layer_num, activation, kernel_initializer='he_uniform', bias_val=0.01</em>)](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/eaf8f4b97bc57dddf6ba77ef0a9a919a7b6e34c0/model.py#L14)
+
+Initializes a "convolutional block" which has a Conv2D layer initialized with the given input, a BatchNormalization layer and an activation layer determined by `activation`.
+
+
+| **Arguments**         |                                                                                                                                                                                       |
+|---------------------- |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------  |
+| `ip`                  | `keras.layers.Layer`: Any Keras layer such as `Input`, `Conv2D`, `Dense`, etc., which will be used as the input for the `Conv2D` layer.                                               |
+| `filters`             | `int`: The number of filters to be used in the `Conv2D` layer.                                                                                                                        |
+| `kernel_size`         | `tuple`: The size of each filter in the `Conv2D` layer.                                                                                                                               |
+| `strides`             | `strides`: The size of the stride for each filter in the `Conv2D` layer.                                                                                                              |
+| `layer_num`           | `int`: An index value for the layer which will be used in the naming of the layer.                                                                                                    |
+| `activation`          | `str`: The activation layer to be used. Can be `relu`, `elu` or `lrelu`.                                                                                                              |
+| `kernel_initializer`  | `str`: The weight initializer for each filter. Defaults to `he_uniform`.                                                                                                              |
+| `bias_val`            | `float`: The initial bias value to be used for each filter. Defaults to `0.01`.                                                                                                       |
+| **Returns**           |                                                                                                                                                                                       |
+| `conv2dlayer`         | `keras.layers.Layer`: A Keras layer composed of a `Conv2D` layer, a `BatchNormalization` layer and an activation layer, where the Conv2D layer is initialized with the given input.   |
 
 
 ## References
