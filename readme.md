@@ -8,34 +8,34 @@ This document highlights the steps we took to achieve that goal.
 
 <!-- MarkdownTOC -->
 
-- General Approach
-    - The Code
-    - The Model
-    - The Data
-- The "API"
-    - Loading Data \(Module: data\)
-        - data.flatten_csv\(\)
-            - Example
-        - data.load_and_split_data\(\)
-    - Preprocessing Data \(Module: processing\)
-        - processing.vectorized_imread\(\)
-        - processing.vectorized_imresize\(\)
-        - processing.vectorized_cvtColor\(\)
-        - processing.channelwise_standardization\(\)
-        - processing.preprocess\(\)
-    - Augmenting Data \(Module: processing\)
-        - processing.augment_images\(\)
-        - processing.flip_images\(\)
-    - Building the Model \(Module: model\)
-        - model.activation_layer\(\)
-        - model.conv2D\(\)
-        - model.fullyconnected_layers\(\)
-        - model.build_model\(\)
-    - Training the Model \(Module: model\)
-        - model.get_batch\(\)
-        - model.plot_model_history\(\)
-        - model.train_model\(\)
-- References
+- [General Approach](#general-approach)
+    - [The Code](#the-code)
+    - [The Model](#the-model)
+    - [The Data](#the-data)
+- [The "API"](#the-api)
+    - [Loading Data \(Module: data\)](#loading-data-module-data)
+        - [data.flatten_csv\(\)](#dataflatten_csv)
+            - [Example](#example)
+        - [data.load_and_split_data\(\)](#dataload_and_split_data)
+    - [Preprocessing Data \(Module: processing\)](#preprocessing-data-module-processing)
+        - [processing.vectorized_imread\(\)](#processingvectorized_imread)
+        - [processing.vectorized_imresize\(\)](#processingvectorized_imresize)
+        - [processing.vectorized_cvtColor\(\)](#processingvectorized_cvtcolor)
+        - [processing.channelwise_standardization\(\)](#processingchannelwise_standardization)
+        - [processing.preprocess\(\)](#processingpreprocess)
+    - [Augmenting Data \(Module: processing\)](#augmenting-data-module-processing)
+        - [processing.augment_images\(\)](#processingaugment_images)
+        - [processing.flip_images\(\)](#processingflip_images)
+    - [Building the Model \(Module: model\)](#building-the-model-module-model)
+        - [model.activation_layer\(\)](#modelactivation_layer)
+        - [model.conv2D\(\)](#modelconv2d)
+        - [model.fullyconnected_layers\(\)](#modelfullyconnected_layers)
+        - [model.build_model\(\)](#modelbuild_model)
+    - [Training the Model \(Module: model\)](#training-the-model-module-model)
+        - [model.get_batch\(\)](#modelget_batch)
+        - [model.plot_model_history\(\)](#modelplot_model_history)
+        - [model.train_model\(\)](#modeltrain_model)
+- [References](#references)
 
 <!-- /MarkdownTOC -->
 
