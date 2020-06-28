@@ -146,7 +146,9 @@ Calling the function on this file will return:
 
 #### [data.load_and_split_data()](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/bf46840556ba66fb7d6948b098a4119011fa8dde/data.py#L36)
 
-Shortcut function which can be used to load the data from a specified CSV file and split it into train, test and validation sets according to the specified sizes. It calls `data.flatten_csv()` to load the data from the CSV file.
+Shortcut function which can be used to load the data from a specified CSV file and split it into train, test and validation sets according to the specified sizes. 
+
+> **Note**: The function calls `data.flatten_csv()` to load the data from the CSV file.
 
 | `Arguments` (excluding those from `flatten_csv()`)     |                                                                                                                           |       |
 |---------------------------------------------------    |------------------------------------------------------------------------------------------------------------------------   |---    |
@@ -245,7 +247,7 @@ Augments images according to the given threshold. It currently supports only ran
 
 A helper function which flips the images left/right that are outside the threshold *and* `True` in `mask` if it is specified, flipping the corresponding labels as well (simple negation).
 
-`processing.augment_images()` calls this function and passes `mask` based on `aug_threshold` to ensure that flipped images are among the images that are to be augmented.
+>**Note**: `processing.augment_images()` calls this function and passes `mask` based on `aug_threshold` to ensure that flipped images are among the images that are to be augmented.
 
 | **Arguments**     |                                                                                                                                                       |
 |---------------    |---------------------------------------------------------------------------------------------------------------------------------------------------    |
@@ -308,7 +310,9 @@ Helper function which builds the fully-connected block of the model with the spe
 
 #### [model.build_model()](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/bf46840556ba66fb7d6948b098a4119011fa8dde/model.py#L61)
 
-A shortcut function which builds the model as specified in the paper. It calls `model.conv2d()` and `model.fullyconnected_layers()`, using their default values for the parameters. It uses the `Adam` optimizer and `mse` as its loss when `compile_model = True`.
+A shortcut function which builds the model as specified in the paper. It calls `model.conv2d()` and `model.fullyconnected_layers()`, using their default values for the parameters. 
+
+> **Note**: The function uses the `Adam` optimizer and `mse` as its loss when `compile_model = True`.
 
 | **Arguments**     |                                                                                                                                                                                                                                       |
 |-----------------  |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   |
@@ -326,9 +330,11 @@ A shortcut function which builds the model as specified in the paper. It calls `
 
 #### [model.get_batch()](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/bf46840556ba66fb7d6948b098a4119011fa8dde/model.py#L104)
 
-Helper function which works as an infinite generator, yielding random batches of images according to the specified batch size and the given list of image paths. It also performs augmentation on the images if the model is training (`is_training = True`).
+Helper function which works as an infinite generator, yielding random batches of images according to the specified batch size and the given list of image paths.
 
 >**Note**: The function calls processing.vectorized_imread() to read the images using the image paths.
+
+> **Note**: The function performs augmentation on the images when `is_training = True`.
 
 | **Arguments**     |                                                                                                                               |
 |---------------    |---------------------------------------------------------------------------------------------------------------------------    |
@@ -352,7 +358,9 @@ Helper function which plots the train and validation loss curve of the model aga
 
 #### [model.train_model()](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/bf46840556ba66fb7d6948b098a4119011fa8dde/model.py#L123)
 
-Helper function which trains a model given the training and validation sets, the batch size and the number of epochs by calling `model.get_batch()` inside `keras.Model.fit_generator()`. It determines the `steps_per_epoch` by dividing the length of the training set by `batch size` and `validation_steps` by dividing the length of the validation set by `batch_size`. It calls `model.plot_model_history()` when `plot_history = True`.
+Helper function which trains a model given the training and validation sets, the batch size and the number of epochs by calling `model.get_batch()` inside `keras.Model.fit_generator()`. It determines the `steps_per_epoch` by dividing the length of the training set by `batch size` and `validation_steps` by dividing the length of the validation set by `batch_size`. 
+
+> **Note**: The function calls `model.plot_model_history()` when `plot_history = True`.
 
 | **Arguments**     |                                                                                                                           |       |
 |----------------   |-------------------------------------------------------------------------------------------------------------------------- |---    |
