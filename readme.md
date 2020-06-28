@@ -14,20 +14,27 @@ This document highlights the steps we took to achieve that goal.
     - The Data
 - The "API"
     - Loading Data \(Module: data\)
-        - data.flatten_csv\(path, data_dir, column_names, header=None, usecols=&#91;0, 1, 2, 3&#93;, shift=0.2\)
+        - data.flatten_csv\(\)
             - Example
+        - data.load_and_split_data\(\)
     - Preprocessing Data \(Module: processing\)
-        - processing.vectorized_imread\(image_paths\)
-        - processing.vectorized_imresize\(images, dsize, interpolation=cv2.INTER_LINEAR\)
-        - processing.vectorized_cvtColor\(images, code\)
-        - processing.channelwise_standardization\(images, epsilon=1e-7\)
-        - processing.preprocess\(images, size=(200, 66\), epsilon=1e-7, colorspace=cv2.COLOR_BGR2YUV)
+        - processing.vectorized_imread\(\)
+        - processing.vectorized_imresize\(\)
+        - processing.vectorized_cvtColor\(\)
+        - processing.channelwise_standardization\(\)
+        - processing.preprocess\(\)
     - Augmenting Data \(Module: processing\)
-        - processing.augment_images\(images, labels, aug_threshold=0.6, flip_threshold=0.5\)
-        - processing.flip_images\(images, labels, mask=None, threshold=0.5\)
+        - processing.augment_images\(\)
+        - processing.flip_images\(\)
     - Building the Model \(Module: model\)
-        - model.activation_layer\(ip, activation\)
-        - model.conv2D\(ip, filters, kernel_size, strides, layer_num, activation, kernel_initializer='he_uniform', bias_val=0.01\)
+        - model.activation_layer\(\)
+        - model.conv2D\(\)
+        - model.fullyconnected_layers\(\)
+        - model.build_model\(\)
+    - Training the Model \(Module: model\)
+        - model.get_batch\(\)
+        - model.plot_model_history\(\)
+        - model.train_model\(\)
 - References
 
 <!-- /MarkdownTOC -->
@@ -103,7 +110,7 @@ This section documents the complete API available to the user for processing dat
 > 
 ### [Loading Data (Module: data)](data.py)
 
-#### [data.flatten_csv(<em>path, data_dir, column_names, header=None, usecols=&#91;0, 1, 2, 3&#93;, shift=0.2</em>)](/blob/34977001664d516b1e2ae007ddc3c0bebf2da39a/data.py#L6)
+#### [data.flatten_csv()](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/bf46840556ba66fb7d6948b098a4119011fa8dde/data.py#L8)
 
 "Flattens" the CSV files so that the the three columns containing the three angles become rows in themselves and the steering angle gets repeated for them. It also shifts the steering angle for right (subtracting `shift`) and left images (adding `shift`) as all angles are with respect to center image.
 
@@ -137,42 +144,61 @@ Calling the function on this file will return:
  labels = [0.5, 0.7, 0.3]
 ```
 
+#### [data.load_and_split_data()](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/bf46840556ba66fb7d6948b098a4119011fa8dde/data.py#L36)
+
+Shortcut function which can be used to load the data from a specified CSV file and split it into train, test and validation sets according to the specified sizes. It calls `data.flatten_csv()` to load the data from the CSV file.
+
+| `Arguments` (excluding those from `flatten_csv()`)     |                                                                                                                           |       |
+|---------------------------------------------------    |------------------------------------------------------------------------------------------------------------------------   |---    |
+| `test_size`                                           | `float`: The proportion of data to be kept aside as the test set. Defaults to `0.15`, reserving 15% of the data.          |       |
+| `val_size`                                            | `float`: The proportion of data to be kept aside as the validation set. Defaults to `0.15`, reserving 15% of the data.    |       |
+| **Returns**                                           |                                                                                                                           |       |
+| `split data`                                          | `tuple`: A sextuple in the order of training, validation, test images, training, validation, test labels.                 |       |
+
+
 
 ----
 
 ### [Preprocessing Data (Module: processing)](processing.py)
 
-#### [processing.vectorized_imread(image_paths)](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/eaf8f4b97bc57dddf6ba77ef0a9a919a7b6e34c0/processing.py#L5)
+#### [processing.vectorized_imread()](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/bf46840556ba66fb7d6948b098a4119011fa8dde/processing.py#L5)
 
 A vectorized implementation of OpenCV's `imread()` function developed using `numpy.vectorize()`, used to obtain a 4D array of images from a list of image paths in a single call.
 
-Arguments are same as the normal `imread()` function, except that this function takes multiple image paths instead of a single image path.
+| **Arguments** (excluding those from `cv2.imread()`)   |                                                                                                                               |
+|-----------------------------------------------------  |---------------------------------------------------------------------------------------------------------------------------    |
+| `images`                                              | `numpy.array`: A 1D array of strings representing paths to images files. This necessarily needs to be the first argument.     |
+| **Returns**                                           |                                                                                                                               |
+| `images`                                              | `numpy.array`: A 4D array of images as (N X height X width X channels)                                                        |
 
-It returns the opened images as a 4D array.
+> **NOTE:** This doesn't have, most of the times, any performance gains. The internal implementation is essentially a loop. It exists purely for conciseness.
 
-
-#### [processing.vectorized_imresize(images, dsize, interpolation=cv2.INTER_LINEAR)](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/c30377f8a199db07d56d880c18c7acfb7524675e/processing.py#L7)
+#### [processing.vectorized_imresize()](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/bf46840556ba66fb7d6948b098a4119011fa8dde/processing.py#L8)
 
 A vectorized implementation of OpenCV's `resize()` function developed using `numpy.vectorize()`, used to resize a bunch of images in a single call.
 
-Arguments are same as the normal `resize()` function, except that this function takes multiple images instead of a single image.
-
-It returns the resized images as a 4D array.
+| **Arguments** (excluding those from `cv2.resize()`)   |                                                                                           |
+|-----------------------------------------------------  |---------------------------------------------------------------------------------------    |
+| `images`                                              | `numpy.array`: A 4D array of images. This necessarily needs to be the first argument.     |
+| **Returns**                                           |                                                                                           |
+| `images`                                              | `numpy.array`: A 4D array of the resized images.                                          |
 
 > **NOTE:** This doesn't have, most of the times, any performance gains. The internal implementation is essentially a loop. It exists purely for conciseness.
 
 
-#### [processing.vectorized_cvtColor(images, code)](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/c30377f8a199db07d56d880c18c7acfb7524675e/processing.py#L10)
+#### [processing.vectorized_cvtColor()](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/bf46840556ba66fb7d6948b098a4119011fa8dde/processing.py#L12)
 
 A vectorized implementation of OpenCV's `cvtColor()` function developed using `numpy.vectorize()`, used to change the colorspace of a bunch of images in a single call.
 
-Arguments are same as the normal `cvtColor()` function, except that this function takes multiple images instead of a single image.
-
-It returns the converted images as a 4D array.
+| **Arguments** (excluding those from `cv2.cvtColor()`)   |                                                                                           |
+|-----------------------------------------------------  |---------------------------------------------------------------------------------------    |
+| `images`                                              | `numpy.array`: A 4D array of images. This necessarily needs to be the first argument.     |
+| **Returns**                                           |                                                                                           |
+| `images`                                              | `numpy.array`: A 4D array of the converted images.                                        |
 
 > **NOTE:** This doesn't have, most of the times, any performance gains. The internal implementation is essentially a loop. It exists purely for conciseness.
 
-#### [processing.channelwise_standardization(<em>images, epsilon=1e-7</em>)](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/7e6fd9817bb41c04198a70818fd97761d532ded6/processing.py#L25)
+#### [processing.channelwise_standardization()](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/bf46840556ba66fb7d6948b098a4119011fa8dde/processing.py#L17)
 
 Standardizes the images so that they have 0 mean and unit standard deviation per channel (RGB, YUV, etc.)
 
@@ -183,7 +209,7 @@ Standardizes the images so that they have 0 mean and unit standard deviation per
 | **Returns**   |                                                   |
 | `images`      | `numpy.array`: The standardized images as a 4D array   |
 
-#### [processing.preprocess(<em>images, size=(200, 66), epsilon=1e-7, colorspace=cv2.COLOR_BGR2YUV</em>)](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/0a39d7c5d90c23d28e69c0c3eba73bf9a6b59f15/processing.py#L21)
+#### [processing.preprocess()](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/bf46840556ba66fb7d6948b098a4119011fa8dde/processing.py#L23)
 
 Combines resizing, colorspace conversion and standardization into one single function, becoming the preprocessor in the pipeline. It uses `processing.vectorized_imresize()`, `processing.vectorized_cvtColor()` and `processing.channelwise_standardization()` to perform these tasks. Additionally, the function changes the data type used for the images from `float64` (NumPy's default) to `float32` to reduce amount of memory occupied by the images.
 
@@ -201,7 +227,7 @@ Combines resizing, colorspace conversion and standardization into one single fun
 
 ### [Augmenting Data (Module: processing)](processing.py)
 
-#### [processing.augment_images(<em>images, labels, aug_threshold=0.6, flip_threshold=0.5</em>)](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/0a39d7c5d90c23d28e69c0c3eba73bf9a6b59f15/processing.py#L40)
+#### [processing.augment_images()](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/bf46840556ba66fb7d6948b098a4119011fa8dde/processing.py#L42)
 
 Augments images according to the given threshold. It currently supports only random left/right flipping according to the given flip threshold.
 
@@ -215,7 +241,7 @@ Augments images according to the given threshold. It currently supports only ran
 | `images`      | `numpy.array`: Augmented and unaugmented images as a 4D array.    |
 | `labels`      | `numpy.array`: Augmented and unaugmented labels as a 1D array.    |
 
-#### [processing.flip_images(<em>images, labels, mask=None, threshold=0.5</em>)](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/0a39d7c5d90c23d28e69c0c3eba73bf9a6b59f15/processing.py#L32)
+#### [processing.flip_images()](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/bf46840556ba66fb7d6948b098a4119011fa8dde/processing.py#L34)
 
 A helper function which flips the images left/right that are outside the threshold *and* `True` in `mask` if it is specified, flipping the corresponding labels as well (simple negation).
 
@@ -236,7 +262,7 @@ A helper function which flips the images left/right that are outside the thresho
 
 ### [Building the Model (Module: model)](model.py)
 
-#### [model.activation_layer(<em>ip, activation</em>)](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/eaf8f4b97bc57dddf6ba77ef0a9a919a7b6e34c0/model.py#L8)
+#### [model.activation_layer()](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/bf46840556ba66fb7d6948b098a4119011fa8dde/model.py#L10)
 
 Initializes a `ReLU`, `ELU` or `LeakyReLU` activation layer with the given input layer based on `activation`. This function can be used in place of the `activation` keyword argument in all Keras layers to mix-match activations for different layers and easily use `ELU`, `LeakyReLU`, which otherwise need to be imported separately.
 
@@ -249,7 +275,7 @@ Initializes a `ReLU`, `ELU` or `LeakyReLU` activation layer with the given input
 | **Raises**        |                                                                                                                                       |
 | `KeyError`        | When `activation` is not one of the specified values.                                                                                 |
 
-#### [model.conv2D(<em>ip, filters, kernel_size, strides, layer_num, activation, kernel_initializer='he_uniform', bias_val=0.01</em>)](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/eaf8f4b97bc57dddf6ba77ef0a9a919a7b6e34c0/model.py#L14)
+#### [model.conv2D()](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/bf46840556ba66fb7d6948b098a4119011fa8dde/model.py#L16)
 
 Initializes a "convolutional block" which has a Conv2D layer initialized with the given input, a BatchNormalization layer and an activation layer determined by `activation`.
 
@@ -265,7 +291,79 @@ Initializes a "convolutional block" which has a Conv2D layer initialized with th
 | `kernel_initializer`  | `str`: The weight initializer for each filter. Defaults to `he_uniform`.                                                                                                              |
 | `bias_val`            | `float`: The initial bias value to be used for each filter. Defaults to `0.01`.                                                                                                       |
 | **Returns**           |                                                                                                                                                                                       |
-| `conv2dlayer`         | `keras.layers.Layer`: A Keras layer composed of a `Conv2D` layer, a `BatchNormalization` layer and an activation layer, where the Conv2D layer is initialized with the given input.   |
+| `conv2dblock`         | `keras.layers.Layer`: A Keras layer composed of a `Conv2D` layer, a `BatchNormalization` layer and an activation layer, where the Conv2D layer is initialized with the given input.   |
+
+#### [model.fullyconnected_layers()](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/bf46840556ba66fb7d6948b098a4119011fa8dde/model.py#L35)
+
+Helper function which builds the fully-connected block of the model with the specified activation using three `Dense` layers with  `100`, `50` and `10` units respectively, where the first `Dense` layer is initialized with the given input.
+
+| **Arguments**     |                                                                                                                                                                                                                                       |
+|---------------    |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------    |
+| `ip`              | `keras.layers.Layer`: Any Keras layer such as `Input`, `Conv2D`, `Dense`, etc., which will be used as the input for the first `Dense` layer.                                                                                          |
+| `activation`      | `str`: The activation layer to be used. Can be `relu`, `elu` or `lrelu`.                                                                                                                                                              |
+| `initializer`     | `str`: The weight initializer for each `Dense` layer. Defaults to `he_uniform`.                                                                                                                                                       |
+| `bias_val`        | `float`: The initial bias value to be used for each `Dense` layer. Defaults to `0.01`.                                                                                                                                                |
+| **Returns**       |                                                                                                                                                                                                                                       |
+| `fccblock`        | `keras.layers.Layer`: A Keras layer composed of three `Dense` layers with `100`, `50` and `10` units respectively and the specified activation layer between each, where the first `Dense` layer is initialized with given input.     |
+
+#### [model.build_model()](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/bf46840556ba66fb7d6948b098a4119011fa8dde/model.py#L61)
+
+A shortcut function which builds the model as specified in the paper. It calls `model.conv2d()` and `model.fullyconnected_layers()`, using their default values for the parameters. It uses the `Adam` optimizer and `mse` as its loss when `compile_model = True`.
+
+| **Arguments**     |                                                                                                                                                                                                                                       |
+|-----------------  |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   |
+| `ip`              | `keras.layers.Layer`: Any Keras layer such as `Input`, `Conv2D`, `Dense`, etc., which will be used as the input for the first layer in the model. Defaults to a `Input` layer with the industry standard shape of `(128, 128, 3)`.    |
+| `activation`      | `str`: The activation layer to be used. Can be `relu`, `elu` or `lrelu`. Defaults to industry standard of `relu`.                                                                                                                     |
+| `dropout`         | `float`: The dropout ratio to be used for the `Dropout` layer between the convolutional block and fully connected block.                                                                                                              |
+| `compile_model`   | `bool`: Designates whether the model should be complied or not. Defaults to `True`. Setting it as `False` will allow the user more control over parameters like loss and optimizer.                                                   |
+| `lr`              | `float`: The learning rate to be used in the optimizer. Defaults to `1e-3`.                                                                                                                                                           |
+| **Returns**       |                                                                                                                                                                                                                                       |
+| `model`           | `keras.Model`: The model put together completely from the first input layer to the final output layer, which may also be compiled.                                                                                                    |
+
+----
+
+### [Training the Model (Module: model)](model.py)
+
+#### [model.get_batch()](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/bf46840556ba66fb7d6948b098a4119011fa8dde/model.py#L104)
+
+Helper function which works as an infinite generator, yielding random batches of images according to the specified batch size and the given list of image paths. It also performs augmentation on the images if the model is training (`is_training = True`).
+
+>**Note**: The function calls processing.vectorized_imread() to read the images using the image paths.
+
+| **Arguments**     |                                                                                                                               |
+|---------------    |---------------------------------------------------------------------------------------------------------------------------    |
+| `image_paths`     | `numpy.array`: A 1D array of strings representing the path of the image files.                                                |
+| `labels`          | `numpy.array`: A 1D array of corresponding labels for the images.                                                             |
+| `batch_size`      | `int`: The size of the batch to be generated.                                                                                 |
+| `is_training`     | `bool`: Designates whether the model is currently training. When the model is training, the function augments the images.     |
+| **Returns**       |                                                                                                                               |
+| `images`          | `numpy.array`: A 4D array of images in the generated batch.                                                                   |
+| `labels`          | `numpy.array`: A 1D array of corresponding labels for the batch.                                                              |
+
+#### [model.plot_model_history()](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/bf46840556ba66fb7d6948b098a4119011fa8dde/model.py#L115)
+
+Helper function which plots the train and validation loss curve of the model against the number of epochs.
+
+| `Arguments`   |                                                                                                                                               |       |
+|-------------  |---------------------------------------------------------------------------------------------------------------------------------------------- |---    |
+| `model`       | `keras.Model`: A trained Keras model. **Note**: This function can't be used on a model loaded from memory since such a model has no history.  |       |
+
+
+
+#### [model.train_model()](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/bf46840556ba66fb7d6948b098a4119011fa8dde/model.py#L123)
+
+Helper function which trains a model given the training and validation sets, the batch size and the number of epochs by calling `model.get_batch()` inside `keras.Model.fit_generator()`. It determines the `steps_per_epoch` by dividing the length of the training set by `batch size` and `validation_steps` by dividing the length of the validation set by `batch_size`. It calls `model.plot_model_history()` when `plot_history = True`.
+
+| **Arguments**     |                                                                                                                           |       |
+|----------------   |-------------------------------------------------------------------------------------------------------------------------- |---    |
+| `model`           | `keras.Model`: The model to be trained                                                                                    |       |
+| `im_train`        | `numpy.array`: A 1D array of strings representing the path of the image files that are to be used as the training set.    |       |
+| `labels_train`    | `numpy.array`: A 1D array of corresponding labels for the training set.                                                   |       |
+| `image_val`       | `numpy.array`: A 1D array of strings representing the path of the image files that are to be used as the validation set.  |       |
+| `labels`          | `numpy.array`: A 1D array of corresponding labels for the validation set.                                                 |       |
+| `batch_size`      | `int`: The size of the batches which will be used when training the model. Defaults to `64`.                              |       |
+| `epochs`          | `int`: The number of epochs the model will be trained for. Defaults to `50`.                                              |       |
+| `plot_history`    | `bool`: Designates whether the model's loss curve should be shown after training. Defaults to `True`.                     |       |
 
 
 ## References
