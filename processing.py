@@ -12,16 +12,6 @@ vectorized_cvtColor = np.vectorize(cv2.cvtColor,
                                    signature="(x,y,z),()->(a,b,c)")
 
 
-def resize_images(images, size=(200, 66)):
-    return vectorized_imresize(
-        images, dsize=size, interpolation=cv2.INTER_AREA
-    )
-
-
-def convert_images_colorspace(images, colorspace=cv2.COLOR_BGR2YUV):
-    return vectorized_cvtColor(images, colorspace)
-
-
 def channelwise_standardization(images, epsilon=1e-7):
     mean = np.mean(images, axis=(1, 2), keepdims=True)
     std = np.std(images, axis=(1, 2), keepdims=True)
@@ -31,8 +21,10 @@ def channelwise_standardization(images, epsilon=1e-7):
 def preprocess(
     images, size=(200, 66), epsilon=1e-7, colorspace=cv2.COLOR_BGR2YUV
 ):
-    images = resize_images(images, size=size)
-    images = convert_images_colorspace(images, colorspace=colorspace)
+    images = vectorized_imresize(
+        images, dsize=size, interpolation=cv2.INTER_AREA
+    )
+    images = vectorized_cvtColor(images, colorspace)
     images = channelwise_standardization(images, epsilon=epsilon)
     return images.astype(np.float32)
 
