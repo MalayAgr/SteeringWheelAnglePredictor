@@ -112,8 +112,17 @@ def get_batch(image_paths, labels, batch_size, is_training=False):
         yield preprocess(images), final_labels
 
 
+def plot_model_history(model):
+    plt.plot(model.history.history['loss'], 'r', label='train')
+    plt.plot(model.history.history['val_loss'], 'g', label='validation')
+    plt.xlabel('Epochs')
+    plt.ylabel('loss')
+    plt.legend()
+
+
 def train_model(
-    model, im_train, labels_train, im_val, labels_val, batch_size=64, epochs=50
+    model, im_train, labels_train, im_val, labels_val, batch_size=64,
+    epochs=50, plot_history=True
 ):
     model.fit_generator(
         get_batch(im_train, labels_train, batch_size, is_training=True),
@@ -124,10 +133,5 @@ def train_model(
         verbose=1
     )
 
-
-def plot_model_history(model):
-    plt.plot(model.history.history['loss'], 'r', label='train')
-    plt.plot(model.history.history['val_loss'], 'g', label='validation')
-    plt.xlabel('Epochs')
-    plt.ylabel('loss')
-    plt.legend()
+    if plot_history:
+        plot_model_history(model)

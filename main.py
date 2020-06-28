@@ -1,5 +1,5 @@
 from tensorflow.keras import Input
-from model import build_model, train_model, plot_model_history
+from model import build_model, train_model
 from data import load_and_split_data
 
 
@@ -22,7 +22,6 @@ def main():
         model=model, im_train=im_train, labels_train=labels_train,
         im_val=im_val, labels_val=labels_val
     )
-    plot_model_history(model)
 
 
 if __name__ == '__main__':
