@@ -29,9 +29,9 @@ def preprocess(
     return images.astype(np.float32)
 
 
-def flip_images(images, labels, mask, threshold=0.5):
+def flip_images(images, labels, mask=None, threshold=0.5):
     to_be_flipped = (np.random.rand(len(images)) < threshold)
-    mask &= to_be_flipped
+    mask = to_be_flipped if mask is None else mask & to_be_flipped
     images[mask] = np.flipud(images[mask])
     labels[mask] = -labels[mask]
     return images, labels
