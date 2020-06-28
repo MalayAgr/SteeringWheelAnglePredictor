@@ -165,17 +165,19 @@ Shortcut function which can be used to load the data from a specified CSV file a
 
 A vectorized implementation of OpenCV's `imread()` function developed using `numpy.vectorize()`, used to obtain a 4D array of images from a list of image paths in a single call.
 
+> **NOTE:** This doesn't have, most of the times, any performance gains. The internal implementation is essentially a loop. It exists purely for conciseness.
+
 | **Arguments** (excluding those from `cv2.imread()`)   |                                                                                                                               |
 |-----------------------------------------------------  |---------------------------------------------------------------------------------------------------------------------------    |
 | `images`                                              | `numpy.array`: A 1D array of strings representing paths to images files. This necessarily needs to be the first argument.     |
 | **Returns**                                           |                                                                                                                               |
 | `images`                                              | `numpy.array`: A 4D array of images as (N X height X width X channels).                                                        |
 
-> **NOTE:** This doesn't have, most of the times, any performance gains. The internal implementation is essentially a loop. It exists purely for conciseness.
-
 #### [processing.vectorized_imresize()](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/bf46840556ba66fb7d6948b098a4119011fa8dde/processing.py#L8)
 
 A vectorized implementation of OpenCV's `resize()` function developed using `numpy.vectorize()`, used to resize a bunch of images in a single call.
+
+> **NOTE:** This doesn't have, most of the times, any performance gains. The internal implementation is essentially a loop. It exists purely for conciseness.
 
 | **Arguments** (excluding those from `cv2.resize()`)   |                                                                                           |
 |-----------------------------------------------------  |---------------------------------------------------------------------------------------    |
@@ -183,20 +185,18 @@ A vectorized implementation of OpenCV's `resize()` function developed using `num
 | **Returns**                                           |                                                                                           |
 | `images`                                              | `numpy.array`: The resized images as a 4D array.                                          |
 
-> **NOTE:** This doesn't have, most of the times, any performance gains. The internal implementation is essentially a loop. It exists purely for conciseness.
-
 
 #### [processing.vectorized_cvtColor()](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/bf46840556ba66fb7d6948b098a4119011fa8dde/processing.py#L12)
 
 A vectorized implementation of OpenCV's `cvtColor()` function developed using `numpy.vectorize()`, used to change the colorspace of a bunch of images in a single call.
+
+> **NOTE:** This doesn't have, most of the times, any performance gains. The internal implementation is essentially a loop. It exists purely for conciseness.
 
 | **Arguments** (excluding those from `cv2.cvtColor()`)   |                                                                                           |
 |-----------------------------------------------------  |---------------------------------------------------------------------------------------    |
 | `images`                                              | `numpy.array`: A 4D array of images as (N X height x width X channels). This necessarily needs to be the first argument.     |
 | **Returns**                                           |                                                                                           |
 | `images`                                              | `numpy.array`: The converted images as a 4D array.                                    |
-
-> **NOTE:** This doesn't have, most of the times, any performance gains. The internal implementation is essentially a loop. It exists purely for conciseness.
 
 #### [processing.channelwise_standardization()](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/bf46840556ba66fb7d6948b098a4119011fa8dde/processing.py#L17)
 
