@@ -43,13 +43,13 @@ Our approach was based on a seminal paper published by NVIDIA in 2016 [[1]](#ref
 
 The architecture of the CNN model is as follows:
 
-* A 3 X 66 X 200 input layer, normalized or standardized
-* A convolutional layer with 24 kernels, 5 X 5 in size and stride of 2
-* A convolutional layer with 36 kernels, 5 X 5 in size and stride of 2
-* A convolutional layers with 48 kernels, 5 X 5 in size and stride of 2
-* Two convolutional layers with 64 kernels each, 3 X 3 in size and stride of 1
-* Two fully-connected layers with 100 and 50 units respectively
-* A final fully-connected layer with 1 unit for the output
+* A `3 X 66 X 200` input layer, normalized or standardized
+* A convolutional layer with `24` kernels, `5 X 5` in size and stride of `2`
+* A convolutional layer with `36` kernels, `5 X 5` in size and stride of `2`
+* A convolutional layers with `48` kernels, `5 X 5` in size and stride of `2`
+* Two convolutional layers with `64` kernels each, `3 X 3` in size and stride of `1`
+* Three fully-connected layers with `100`, `50` and `10` units respectively
+* A final fully-connected layer with `1` unit for the output
 
 <div align="center" style="padding: 10px;">
     <img src="img/model_diagram.png" width="500" height="500" alt="Model">
