@@ -268,6 +268,8 @@ A helper function which flips the images left/right that are outside the thresho
 
 Initializes a `ReLU`, `ELU` or `LeakyReLU` activation layer with the given input layer based on `activation`. This function can be used in place of the `activation` keyword argument in all Keras layers to mix-match activations for different layers and easily use `ELU`, `LeakyReLU`, which otherwise need to be imported separately.
 
+> **Note:** All functions which have the parameter `activation` use this function and therefore, will raise all errors of this function.
+
 | **Arguments**     |                                                                                                                                       |
 |---------------    |-------------------------------------------------------------------------------------------------------------------------------------  |
 | `ip`              | `keras.layers.Layer`: Any Keras layer such as `Input`, `Conv2D`, `Dense`, etc., which will be used as the input for the activation.   |
@@ -334,7 +336,7 @@ Helper function which works as an infinite generator, yielding random batches of
 
 >**Note**: The function calls processing.vectorized_imread() to read the images using the image paths.
 
-> **Note**: The function performs augmentation on the images when `is_training = True`.
+> **Note**: The function performs augmentation by calling `processing.augment_images()` on the images when `is_training = True`.
 
 | **Arguments**     |                                                                                                                               |
 |---------------    |---------------------------------------------------------------------------------------------------------------------------    |
