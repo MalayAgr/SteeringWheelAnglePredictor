@@ -150,12 +150,12 @@ Shortcut function which can be used to load the data from a specified CSV file a
 
 > **Note**: The function calls `data.flatten_csv()` to load the data from the CSV file.
 
-| `Arguments` (excluding those from `flatten_csv()`)     |                                                                                                                           |       |
-|---------------------------------------------------    |------------------------------------------------------------------------------------------------------------------------   |---    |
-| `test_size`                                           | `float`: The proportion of data to be kept aside as the test set. Defaults to `0.15`, reserving 15% of the data.          |       |
-| `val_size`                                            | `float`: The proportion of data to be kept aside as the validation set. Defaults to `0.15`, reserving 15% of the data.    |       |
-| **Returns**                                           |                                                                                                                           |       |
-| `split data`                                          | `tuple`: A sextuple in the order of training, validation, test images, training, validation, test labels.                 |       |
+| `Arguments` (excluding those from `flatten_csv()`)    |                                                                                                                           |
+|----------------------------------------------------   |------------------------------------------------------------------------------------------------------------------------   |
+| `test_size`                                           | `float`: The proportion of data to be kept aside as the test set. Defaults to `0.15`, reserving 15% of the data.          |
+| `val_size`                                            | `float`: The proportion of data to be kept aside as the validation set. Defaults to `0.15`, reserving 15% of the data.    |
+| **Returns**                                           |                                                                                                                           |
+| `split data`                                          | `tuple`: A sextuple in the order of training, validation, test images, training, validation, test labels.                 |
 
 
 
@@ -363,16 +363,16 @@ Helper function which trains a model given the training and validation sets, the
 
 > **Note**: The function calls `model.plot_model_history()` when `plot_history = True`.
 
-| **Arguments**     |                                                                                                                           |       |
-|----------------   |-------------------------------------------------------------------------------------------------------------------------- |---    |
-| `model`           | `keras.Model`: The model to be trained                                                                                    |       |
-| `im_train`        | `numpy.array`: A 1D array of strings representing the path of the image files that are to be used as the training set.    |       |
-| `labels_train`    | `numpy.array`: A 1D array of corresponding labels for the training set.                                                   |       |
-| `image_val`       | `numpy.array`: A 1D array of strings representing the path of the image files that are to be used as the validation set.  |       |
-| `labels`          | `numpy.array`: A 1D array of corresponding labels for the validation set.                                                 |       |
-| `batch_size`      | `int`: The size of the batches which will be used when training the model. Defaults to `64`.                              |       |
-| `epochs`          | `int`: The number of epochs the model will be trained for. Defaults to `50`.                                              |       |
-| `plot_history`    | `bool`: Designates whether the model's loss curve should be shown after training. Defaults to `True`.                     |       |
+| **Arguments**     |                                                                                                                           |
+|----------------   |-------------------------------------------------------------------------------------------------------------------------- |
+| `model`           | `keras.Model`: The model to be trained                                                                                    |
+| `im_train`        | `numpy.array`: A 1D array of strings representing the path of the image files that are to be used as the training set.    |
+| `labels_train`    | `numpy.array`: A 1D array of corresponding labels for the training set.                                                   |
+| `image_val`       | `numpy.array`: A 1D array of strings representing the path of the image files that are to be used as the validation set.  |
+| `labels`          | `numpy.array`: A 1D array of corresponding labels for the validation set.                                                 |
+| `batch_size`      | `int`: The size of the batches which will be used when training the model. Defaults to `64`.                              |
+| `epochs`          | `int`: The number of epochs the model will be trained for. Defaults to `50`.                                              |
+| `plot_history`    | `bool`: Designates whether the model's loss curve should be shown after training. Defaults to `True`.                     |
 
 
 ## References
