@@ -134,9 +134,10 @@ Effectively, if your CSV file has `m` rows, the function will give you 1D arrays
 
 Say this is our CSV file:
 
-| img1_center.png   | img1_left.png     | img1_right.png    | 0.5   |
-|-----------------  |---------------    |----------------   |------ |
-| img2_center.png   | img2_left.png     | img2_right.png    | -0.5  |
+|      center       |      left         |      right        | angle     |
+|:---------------:  |:-------------:    |:--------------:   |:-----:    |
+| img1_center.png   | img1_left.png     | img1_right.png    | 0.5       |
+| img2_center.png   | img2_left.png     | img2_right.png    | -0.5      |
 
 Calling the function with `shift` as its default value on this file will return:
 
