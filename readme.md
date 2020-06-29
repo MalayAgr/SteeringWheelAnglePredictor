@@ -134,14 +134,15 @@ Effectively, if your CSV file has `m` rows, the function will give you 1D arrays
 
 Say this is our CSV file:
 
-| img_center.png    | img_left.png  | img_right.png     | 0.5   |
-|----------------   |-------------- |---------------    |-----  |
+| img1_center.png   | img1_left.png     | img1_right.png    | 0.5   |
+|-----------------  |---------------    |----------------   |------ |
+| img2_center.png   | img2_left.png     | img2_right.png    | -0.5  |
 
-Calling the function on this file will return:
+Calling the function with `shift` as its default value on this file will return:
 
 ```python
- images = ['img_center.png', 'img_left.png', 'img_right.png']
- labels = [0.5, 0.7, 0.3]
+ images = ['img1_center.png', 'img1_left.png', 'img1_right.png', 'img2_center.png', 'img2_left.png', 'img2_right.png']
+ labels = [0.5, 0.7, 0.3, -0.5, -0.3, -0.7]
 ```
 
 #### [data.load_and_split_data()](https://github.com/MalayAgarwal-Lee/steering_wheel_angle/blob/bf46840556ba66fb7d6948b098a4119011fa8dde/data.py#L36)
