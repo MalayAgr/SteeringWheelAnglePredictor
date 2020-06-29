@@ -338,7 +338,7 @@ Helper function which works as an infinite generator, yielding random batches of
 
 >**Note**: The function calls `processing.vectorized_imread()` to read the images using the image paths.
 
-> **Note:** Preprocessing is applied in all scenarios by calling `processing.preprocess()`.
+> **Note:** The function calls `processing.preprocess()` to preprocess the images in all scenarios.
 
 > **Note**: The function calls `processing.augment_images()` to augment the images when `is_training = True`.
 
