@@ -106,7 +106,7 @@ Our model was trained to be able to drive on the two default tracks available in
 
 This section documents the complete API available to the user for processing data, building the model and training it.
 
-> **NOTE:** Having this API is not enough to actually enable the simulator to drive the car using the model. There needs to be a script in between which relays data to and fro between the model and the simulator.
+> **NOTE:** Having this API is not enough to actually enable the simulator to drive the car using the model. There needs to be a script in between which relays data to and fro between the model and the simulator. Refer to the link to the simulator. The repository has such a script.
 > 
 ### [Loading Data (Module: data)](data.py)
 
