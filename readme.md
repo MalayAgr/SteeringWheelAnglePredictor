@@ -50,7 +50,7 @@ Our approach was to make the code as modular as possible, thereby making customi
 3. [model.py](model.py) - Responsible for building and training the model
 4. [main.py](main.py) - Main driver program which uses the above modules to obtain a trained model
 
-We used [TensorFlow's Keras API](https://keras.io/) to build the model, strictly adhering to the functional API for greater flexibility. [NumPy](https://numpy.org/), [Pandas](https://pandas.pydata.org/), [OpenCV](https://github.com/skvark/opencv-python) and [scikit-learn](https://scikit-learn.org/) were used for data processing. [Matplotlib](https://matplotlib.org/) was used at one place to generate plot.
+We used [TensorFlow's Keras API](https://keras.io/) to build the model, strictly adhering to the functional API for greater flexibility. [NumPy](https://numpy.org/), [Pandas](https://pandas.pydata.org/), [OpenCV](https://github.com/skvark/opencv-python) and [scikit-learn](https://scikit-learn.org/) were used for data processing. [Matplotlib](https://matplotlib.org/) was used at one place to generate a plot.
 
 The code will be covered in greater details in the following sections.
 
