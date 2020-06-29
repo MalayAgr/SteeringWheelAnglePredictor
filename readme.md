@@ -334,7 +334,7 @@ A shortcut function which builds the model as specified in the paper. It calls `
 
 Helper function which works as an infinite generator, yielding random batches of images according to the specified batch size and the given list of image paths.
 
->**Note**: The function calls processing.vectorized_imread() to read the images using the image paths.
+>**Note**: The function calls `processing.vectorized_imread()` to read the images using the image paths.
 
 > **Note**: The function performs augmentation by calling `processing.augment_images()` on the images when `is_training = True`.
 
