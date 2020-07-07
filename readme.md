@@ -12,6 +12,7 @@ This document highlights the steps we took to achieve that goal.
     - [The Code](#the-code)
     - [The Model](#the-model)
     - [The Data](#the-data)
+    - [The Results](#the-results)
 - [The "API"](#the-api)
     - [Loading Data \(Module: data\)](#loading-data-module-data)
         - [data.flatten_csv\(\)](#dataflatten_csv)
@@ -101,6 +102,12 @@ The simulator comes with two modes of operation, training and autonomous:
 It is also equipped with two tracks and more tracks can be added with a bit of hacking (refer to link above).
 
 Our model was trained to be able to drive on the two default tracks available in the simulator.
+
+### The Results
+
+Here are the results of building, training and running the model on the simulator.
+
+<table style="border-collapse:collapse;border-spacing:0;margin-left:auto;margin-right:auto" class="tg"><thead><tr><th style="border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:top;word-break:normal"><img src="img/track1.gif"></th><th style="border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:top;word-break:normal"><img src="img/track2.gif"></th></tr></thead></table>
 
 ## The "API"
 
